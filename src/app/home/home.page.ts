@@ -16,6 +16,9 @@ import { TaskStorageService } from '../services/task-storage.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {
+  /** Debe coincidir con la altura efectiva de `.task-row` (CDK virtual scroll). */
+  readonly taskRowPx = 92;
+
   readonly categories$: Observable<Category[]>;
   readonly filteredTasks$: Observable<Task[]>;
   readonly filterId$: Observable<string>;

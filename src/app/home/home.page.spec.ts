@@ -1,3 +1,4 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -15,7 +16,7 @@ describe('HomePage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HomePage],
-      imports: [IonicModule.forRoot(), FormsModule],
+      imports: [IonicModule.forRoot(), FormsModule, ScrollingModule],
       providers: [
         {
           provide: TaskStorageService,

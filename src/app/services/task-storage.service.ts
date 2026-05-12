@@ -4,12 +4,15 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Task } from '../models/task.model';
 
 const STORAGE_KEY = 'tm_tasks';
+const PERSIST_DEBOUNCE_MS = 350;
 
 @Injectable({ providedIn: 'root' })
 export class TaskStorageService {
   private readonly tasksSubject = new BehaviorSubject<Task[]>([]);
 
   readonly tasks$: Observable<Task[]> = this.tasksSubject.asObservable();
+
+  private persistTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private readonly storage: Storage) {}
 
@@ -24,6 +27,24 @@ export class TaskStorageService {
     await this.storage.set(STORAGE_KEY, this.tasksSubject.getValue());
   }
 
+  private schedulePersistDebounced(): void {
+    if (this.persistTimer != null) {
+      clearTimeout(this.persistTimer);
+    }
+    this.persistTimer = setTimeout(() => {
+      this.persistTimer = null;
+      void this.persist();
+    }, PERSIST_DEBOUNCE_MS);
+  }
+
+  private async persistImmediate(): Promise<void> {
+    if (this.persistTimer != null) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    await this.persist();
+  }
+
   async addTask(title: string): Promise<void> {
     const t = title.trim();
     if (!t) {
@@ -36,7 +57,7 @@ export class TaskStorageService {
       categoryId: null,
     };
     this.tasksSubject.next([task, ...this.tasksSubject.getValue()]);
-    await this.persist();
+    await this.persistImmediate();
   }
 
   async setCompleted(id: string, completed: boolean): Promise<void> {
@@ -44,14 +65,14 @@ export class TaskStorageService {
       .getValue()
       .map((x) => (x.id === id ? { ...x, completed } : x));
     this.tasksSubject.next(next);
-    await this.persist();
+    this.schedulePersistDebounced();
   }
 
   async removeTask(id: string): Promise<void> {
     this.tasksSubject.next(
       this.tasksSubject.getValue().filter((x) => x.id !== id),
     );
-    await this.persist();
+    await this.persistImmediate();
   }
 
   async setTaskCategory(
@@ -62,7 +83,7 @@ export class TaskStorageService {
       x.id === taskId ? { ...x, categoryId } : x,
     );
     this.tasksSubject.next(next);
-    await this.persist();
+    this.schedulePersistDebounced();
   }
 
   /** Quita la categoría de todas las tareas que la usaban (p. ej. al borrar la categoría). */
@@ -71,7 +92,7 @@ export class TaskStorageService {
       x.categoryId === categoryId ? { ...x, categoryId: null } : x,
     );
     this.tasksSubject.next(next);
-    await this.persist();
+    await this.persistImmediate();
   }
 
   private newId(): string {

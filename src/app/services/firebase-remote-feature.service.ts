@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
-import { initializeApp, type FirebaseApp } from 'firebase/app';
-import {
-  fetchAndActivate,
-  getRemoteConfig,
-  getValue,
-  type RemoteConfig,
-} from 'firebase/remote-config';
+import type { FirebaseApp } from 'firebase/app';
+import type { RemoteConfig } from 'firebase/remote-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment, type FirebaseWebConfig } from '../../environments/environment';
 
@@ -40,6 +35,12 @@ export class FirebaseRemoteFeatureService {
     }
 
     try {
+      const [{ initializeApp }, { getRemoteConfig, fetchAndActivate, getValue }] =
+        await Promise.all([
+          import('firebase/app'),
+          import('firebase/remote-config'),
+        ]);
+
       this.app = initializeApp(cfg);
       this.remoteConfig = getRemoteConfig(this.app);
       this.remoteConfig.settings.minimumFetchIntervalMillis = environment.production
@@ -65,6 +66,7 @@ export class FirebaseRemoteFeatureService {
       return;
     }
     try {
+      const { fetchAndActivate, getValue } = await import('firebase/remote-config');
       await fetchAndActivate(this.remoteConfig);
       const value = getValue(
         this.remoteConfig,

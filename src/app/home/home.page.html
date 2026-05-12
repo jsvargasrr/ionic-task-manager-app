@@ -93,9 +93,17 @@
         }
       </p>
     } @else {
-      <ion-list [inset]="true">
-        @for (task of filtered!; track trackById($index, task)) {
-          <ion-item class="task-row">
+      <cdk-virtual-scroll-viewport
+        [itemSize]="taskRowPx"
+        minBufferPx="240"
+        maxBufferPx="560"
+        class="task-viewport"
+      >
+        <ion-list [inset]="true">
+          <ion-item
+            *cdkVirtualFor="let task of filtered!; trackBy: trackById"
+            class="task-row"
+          >
             <ion-checkbox
               slot="start"
               [checked]="task.completed"
@@ -130,8 +138,8 @@
               <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button>
           </ion-item>
-        }
-      </ion-list>
+        </ion-list>
+      </cdk-virtual-scroll-viewport>
     }
   </div>
 </ion-content>
