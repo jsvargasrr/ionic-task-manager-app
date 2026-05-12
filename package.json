@@ -17,7 +17,8 @@
     "cordova:build:android": "npm run build:web && cordova build android",
     "cordova:build:android:release": "npm run build:web && cordova build android --release",
     "cordova:build:ios": "npm run build:web && cordova build ios",
-    "cordova:build:ios:release": "npm run build:web && cordova build ios --release"
+    "cordova:build:ios:release": "npm run build:web && cordova build ios --release",
+    "entrega:apk-debug": "npm run cordova:build:android"
   },
   "private": true,
   "dependencies": {
