@@ -1,0 +1,46 @@
+.page-padding {
+  padding: 0 12px 24px;
+}
+
+.segment-scroll {
+  margin-bottom: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  ion-segment {
+    width: max-content;
+    min-width: 100%;
+  }
+}
+
+.input-row {
+  --inner-padding-end: 0;
+}
+
+.empty-hint {
+  text-align: center;
+  color: var(--ion-color-medium);
+  margin: 24px 12px;
+  font-size: 0.95rem;
+}
+
+ion-label.done h2 {
+  text-decoration: line-through;
+  color: var(--ion-color-medium);
+}
+
+.cat-sub {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
+
+.task-row {
+  --min-height: 56px;
+}
+
+.task-cat-select {
+  max-width: 42%;
+  min-width: 120px;
+  margin-inline-end: 4px;
+}
