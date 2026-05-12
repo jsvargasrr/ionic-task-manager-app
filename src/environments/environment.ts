@@ -2,8 +2,23 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+/** Campos mínimos para inicializar el SDK y Remote Config. */
+export type FirebaseWebConfig = {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket?: string;
+  messagingSenderId?: string;
+  appId: string;
+};
+
+/**
+ * Configuración de la app web de Firebase (consola → Ajustes del proyecto → Tus apps).
+ * Deja `firebase` en `null` para trabajar sin Firebase; Remote Config quedará desactivado.
+ */
 export const environment = {
-  production: false
+  production: false,
+  firebase: null as FirebaseWebConfig | null,
 };
 
 /*

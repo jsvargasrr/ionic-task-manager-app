@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 
 import { HomePage } from './home.page';
 import { CategoryStorageService } from '../services/category-storage.service';
+import { FirebaseRemoteFeatureService } from '../services/firebase-remote-feature.service';
 import { TaskStorageService } from '../services/task-storage.service';
 
 describe('HomePage', () => {
@@ -33,6 +34,15 @@ describe('HomePage', () => {
             addCategory: jasmine.createSpy('addCategory').and.resolveTo(),
             updateCategory: jasmine.createSpy('updateCategory').and.resolveTo(),
             removeCategory: jasmine.createSpy('removeCategory').and.resolveTo(),
+          },
+        },
+        {
+          provide: FirebaseRemoteFeatureService,
+          useValue: {
+            showTaskProgress$: of(false),
+            remoteAvailable$: of(false),
+            init: jasmine.createSpy('init').and.resolveTo(),
+            refresh: jasmine.createSpy('refresh').and.resolveTo(),
           },
         },
       ],

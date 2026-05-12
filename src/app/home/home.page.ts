@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Category } from '../models/category.model';
 import { Task } from '../models/task.model';
 import { CategoryStorageService } from '../services/category-storage.service';
+import { FirebaseRemoteFeatureService } from '../services/firebase-remote-feature.service';
 import { TaskStorageService } from '../services/task-storage.service';
 
 @Component({
@@ -18,6 +19,9 @@ export class HomePage {
   readonly categories$: Observable<Category[]>;
   readonly filteredTasks$: Observable<Task[]>;
   readonly filterId$: Observable<string>;
+  /** Progreso global (todas las tareas) cuando el feature flag de Remote Config está activo. */
+  readonly taskProgress$: Observable<{ completed: number; total: number } | null>;
+  readonly remoteAvailable$: Observable<boolean>;
 
   newTitle = '';
   newCategoryName = '';
@@ -29,9 +33,11 @@ export class HomePage {
     private readonly taskStorage: TaskStorageService,
     private readonly categoryStorage: CategoryStorageService,
     private readonly alertController: AlertController,
+    private readonly remoteFeatures: FirebaseRemoteFeatureService,
   ) {
     this.categories$ = this.categoryStorage.categories$;
     this.filterId$ = this.filterCategoryId$.asObservable();
+    this.remoteAvailable$ = this.remoteFeatures.remoteAvailable$;
     this.filteredTasks$ = combineLatest([
       this.taskStorage.tasks$,
       this.filterCategoryId$,
@@ -39,6 +45,18 @@ export class HomePage {
       map(([tasks, cat]) =>
         cat === 'all' ? tasks : tasks.filter((t) => t.categoryId === cat),
       ),
+    );
+    this.taskProgress$ = combineLatest([
+      this.taskStorage.tasks$,
+      this.remoteFeatures.showTaskProgress$,
+    ]).pipe(
+      map(([tasks, show]) => {
+        if (!show) {
+          return null;
+        }
+        const completed = tasks.filter((t) => t.completed).length;
+        return { completed, total: tasks.length };
+      }),
     );
   }
 
@@ -132,5 +150,9 @@ export class HomePage {
       ],
     });
     await alert.present();
+  }
+
+  async refreshRemoteFeatures(): Promise<void> {
+    await this.remoteFeatures.refresh();
   }
 }

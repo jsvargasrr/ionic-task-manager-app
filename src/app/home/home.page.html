@@ -2,6 +2,15 @@
   <ion-toolbar>
     <ion-title>Tareas</ion-title>
     <ion-buttons slot="end">
+      @if (remoteAvailable$ | async) {
+        <ion-button
+          fill="clear"
+          (click)="refreshRemoteFeatures()"
+          aria-label="Actualizar Remote Config"
+        >
+          <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+        </ion-button>
+      }
       <ion-button (click)="isCatModalOpen = true" aria-label="Gestionar categorías">
         <ion-icon slot="start" name="folder-outline"></ion-icon>
         Categorías
@@ -20,6 +29,7 @@
   @let categories = categories$ | async;
   @let filterVal = filterId$ | async;
   @let filtered = filteredTasks$ | async;
+  @let progress = taskProgress$ | async;
 
   <div class="page-padding">
     <div class="segment-scroll">
@@ -38,6 +48,23 @@
         }
       </ion-segment>
     </div>
+
+    @if (progress) {
+      <ion-card class="progress-card">
+        <ion-card-content>
+          <p class="progress-label">
+            Progreso (Remote Config):
+            <strong>{{ progress.completed }}</strong>
+            de
+            <strong>{{ progress.total }}</strong>
+            completadas
+          </p>
+          <ion-progress-bar
+            [value]="progress.total ? progress.completed / progress.total : 0"
+          ></ion-progress-bar>
+        </ion-card-content>
+      </ion-card>
+    }
 
     <ion-card>
       <ion-card-content>

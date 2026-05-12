@@ -44,3 +44,18 @@ ion-label.done h2 {
   min-width: 120px;
   margin-inline-end: 4px;
 }
+
+.progress-card {
+  margin-bottom: 12px;
+}
+
+.progress-label {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+.progress-card ion-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+}

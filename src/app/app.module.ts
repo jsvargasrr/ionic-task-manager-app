@@ -8,6 +8,7 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { CategoryStorageService } from './services/category-storage.service';
+import { FirebaseRemoteFeatureService } from './services/firebase-remote-feature.service';
 import { TaskStorageService } from './services/task-storage.service';
 
 export function taskStorageInitializer(svc: TaskStorageService): () => Promise<void> {
@@ -16,6 +17,12 @@ export function taskStorageInitializer(svc: TaskStorageService): () => Promise<v
 
 export function categoryStorageInitializer(
   svc: CategoryStorageService,
+): () => Promise<void> {
+  return () => svc.init();
+}
+
+export function firebaseRemoteFeatureInitializer(
+  svc: FirebaseRemoteFeatureService,
 ): () => Promise<void> {
   return () => svc.init();
 }
@@ -41,6 +48,12 @@ export function categoryStorageInitializer(
       multi: true,
       deps: [CategoryStorageService],
       useFactory: categoryStorageInitializer,
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [FirebaseRemoteFeatureService],
+      useFactory: firebaseRemoteFeatureInitializer,
     },
   ],
   bootstrap: [AppComponent],
